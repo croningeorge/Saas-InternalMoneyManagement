@@ -1,0 +1,208 @@
+<div class="col-lg-12">
+  <div class="card">
+    <div class="card-header">
+      <i class="fa fa-align-justify"></i> Master Data / Kyc Doc Type
+      </div>
+      <div class="card-body">
+        <button type="button" class="btn btn-success"  data-toggle="modal" (click)="addDocTypeClear(); addKycDocTypeModal.show()">
+          <i class="fa fa-plus"></i> Add</button>
+          <app-search-box class="pull-right" (onSearch)="search($event);" (onFocus)="focus($event);"></app-search-box>
+    </div>
+    <div class="card-body">
+      <table class="table table-bordered  table-hover">
+        <thead>
+          <tr>
+            <th class="info">Slno</th>
+            <th class="info">Doc Type</th>
+            <th class="info">Doc Availability</th>
+            <th class="info">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let kycDocType of kycDocTypes;index as i;">
+            <td>{{i+1}}</td>
+            <td>{{kycDocType.name}}</td>
+            <td>{{secDocStatus[kycDocType.required_sec_doc]}}</td>
+            <td><i class="fa fa-edit fa-lg mt-4" data-toggle="modal" (click)="editKycDocType(kycDocType); editkycDocTypeModal.show()" ></i>
+              <i class="fa fa-trash-o fa-lg mt-4" (click)="deletekycDocTypeModalOpen(kycDocType); deletekycDocTypeModal.show()"></i>
+            </td> 
+          </tr>
+        </tbody>
+      </table>
+      <nav>
+        <!-- <ul class="pagination">
+          <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+          <li class="page-item active">
+            <a class="page-link" href="#">1</a>
+          </li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">4</a></li>
+          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul> -->
+      </nav>
+    </div>
+  </div>
+</div>
+
+ <!-- Add kyc doc type modal  -->
+
+<div bsModal #addKycDocTypeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-primary" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add KYC Doc Tye</h4>
+        <button type="button" class="close" (click)="addKycDocTypeModal.hide()" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="form" (ngSubmit)="f.form.valid && addNewKycDocType()" #f="ngForm" novalidate>
+        <alert></alert>
+        <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !docTypeName.valid }">
+          <label class="col-md-3 col-form-label" for="hf-docTypeName">Doc Type Name</label>
+          <div class="col-md-9">
+            <input type="text" class="form-control" placeholder="Doc Type Name" [(ngModel)]="model.docTypeName" #docTypeName="ngModel" required name="docTypeName" />
+          </div>
+        </div>
+        <div *ngIf="f.submitted && docTypeName.invalid " 
+          class="alert alert-danger">
+          <div *ngIf = "docTypeName.errors?.required">
+            Doc Type Name is required
+          </div>
+        </div>
+        <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !isRequiredSecDoc.valid }">
+          <label class="col-md-3 col-form-label" for="hf-isRequiredSecDoc">Required Secondary Sec</label>
+          <div class="col-md-9">
+            <select class="form-control" [(ngModel)]="model.isRequiredSecDoc" name="isRequiredSecDoc" #isRequiredSecDoc="ngModel" required>
+              <option [ngValue]="undefined" selected>Select</option>
+              <option  value="1">Yes</option>
+              <option  value="2">No</option>
+            </select>
+          </div>
+        </div>
+        <div *ngIf="f.submitted && isRequiredSecDoc.invalid " 
+          class="alert alert-danger">
+          <div *ngIf = "isRequiredSecDoc.errors?.required">
+            Please Select Choice...!!!!
+          </div>
+        </div>
+        <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !description.valid }">
+            <label class="col-md-3 col-form-label" for="hf-description">Description</label>
+            <div class="col-md-9">
+              <textarea  class="form-control" placeholder="Content.." [(ngModel)]="model.description" #description="ngModel" required name="description" ></textarea> 
+            </div>
+          </div>
+          <div *ngIf="f.submitted && description.invalid " 
+            class="alert alert-danger">
+            <div *ngIf = "description.errors?.required">
+              Description Please...!!!!
+            </div>
+          </div>
+        <div class="row">
+          <div class="col-6">
+            <button [disabled]="loading" class="btn btn-primary px-4">Save</button>
+            <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+            <!-- <a [routerLink]="['/register']" class="btn btn-link">Register</a> -->
+          </div>
+        </div>
+        </form>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<!-- Edit currency modal -->
+<div bsModal #editkycDocTypeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-primary" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Edit Kyc Doc</h4>
+        <button type="button" class="close" (click)="editkycDocTypeModal.hide()" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form name="form" (ngSubmit)="fe.form.valid && updateKycDocType()" #fe="ngForm" novalidate>
+              <alert></alert>
+              <div class="form-group row" [ngClass]="{ 'has-error': fe.submitted && !editDocTypeName.valid }">
+                <label class="col-md-3 col-form-label" for="hf-editDocTypeName">Doc Type Name</label>
+                <div class="col-md-9">
+                  <input type="text" class="form-control" placeholder="Doc Type Name" [(ngModel)]="model.editDocTypeName" #editDocTypeName="ngModel" required name="editDocTypeName" />
+                </div>
+              </div>
+              <div *ngIf="fe.submitted && editDocTypeName.invalid " 
+                class="alert alert-danger">
+                <div *ngIf = "editDocTypeName.errors?.required">
+                  Doc Type Name is required
+                </div>
+              </div>
+              <div class="form-group row" [ngClass]="{ 'has-error': fe.submitted && !editIsRequiredSecDoc.valid }">
+                <label class="col-md-3 col-form-label" for="hf-editIsRequiredSecDoc">Required Secondary Sec</label>
+                <div class="col-md-9">
+                  <select class="form-control" [(ngModel)]="model.editIsRequiredSecDoc" name="editIsRequiredSecDoc" #editIsRequiredSecDoc="ngModel" required>
+                    <!-- <option [ngValue]="undefined" selected>Select</option> -->
+                    <option  value="1">Yes</option>
+                    <option  value="0">No</option>
+                  </select>
+                </div>
+              </div>
+              <div *ngIf="fe.submitted && editIsRequiredSecDoc.invalid " 
+                class="alert alert-danger">
+                <div *ngIf = "editIsRequiredSecDoc.errors?.required">
+                  Please Select Choice...!!!!
+                </div>
+              </div>
+              <div class="form-group row" [ngClass]="{ 'has-error': fe.submitted && !editDescription.valid }">
+                  <label class="col-md-3 col-form-label" for="hf-editDescription">Description</label>
+                  <div class="col-md-9">
+                     <textarea  class="form-control" placeholder="Content.." [(ngModel)]="model.editDescription" #editDescription="ngModel" required name="editDescription" ></textarea> 
+                  </div>
+                </div>
+                <div *ngIf="fe.submitted && editDescription.invalid " 
+                  class="alert alert-danger">
+                  <div *ngIf = "editDescription.errors?.required">
+                    Description Please...!!!!
+                  </div>
+                </div>
+              <div class="row">
+                <div class="col-6">
+                  <button [disabled]="loading" class="btn btn-primary px-4">Save</button>
+                  <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                  <!-- <a [routerLink]="['/register']" class="btn btn-link">Register</a> -->
+                </div>
+              </div>
+              </form>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+ <!-- delete doc type-->
+ <div bsModal #deletekycDocTypeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Delete Kyc Doc Type??</h4>
+        <button type="button" class="close" (click)="deletekycDocTypeModal.hide()" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <alert></alert>
+        <p>Are you sure to delete Kyc Doc Type <b>{{model.kycDocTypeToBeDeleted}}</b></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="deletekycDocTypeModal.hide()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="deleteKycDocType()" [disabled]="!delete">Delete</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

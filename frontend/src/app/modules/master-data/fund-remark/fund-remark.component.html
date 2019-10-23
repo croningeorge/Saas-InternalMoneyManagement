@@ -1,0 +1,171 @@
+<div class="col-lg-12">
+  <div class="card">
+    <div class="card-header">
+      <i class="fa fa-align-justify"></i> Master Data / Fund Remark
+     <!--  <button type="button" class="btn btn-primary" data-toggle="modal" (click)="addFundRemarkModal.show()">
+        Add Fund Remark
+      </button> -->
+    </div>
+    <div class="card-body">
+      <button type="button" class="btn btn-success" data-toggle="modal" (click)="addFundRemarkModal.show()">
+        <i class="fa fa-plus">     </i>Add Fund Remark
+      </button>
+       <app-search-box class="pull-right" (onSearch)="search($event);" (onFocus)="focus($event);"></app-search-box>
+    </div>
+      <div class="card-body">
+
+      <table class="table table-bordered  table-hover">
+        <thead>
+          <tr>
+            <th class="info">Slno</th>
+            <th class="info">Fund Remark</th>
+            <th class="info">Purpose</th>
+            <th class="info">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let FundRemark of FundRemarks">
+            <td>{{FundRemark.id}}</td>
+            <td>{{FundRemark.name}}</td>
+            <td>{{purposeArr[FundRemark.is_purpose]}}</td>
+            <td><i class="fa fa-edit fa-lg mt-4" data-toggle="modal" (click)="editFundRemark(FundRemark); editFundRemarkModal.show()"></i>
+              <i class="fa fa-trash-o fa-lg mt-4" (click)="deleteFundRemarkModalOpen(FundRemark); deleteFundRemarkModal.show()"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <nav>
+        <ul class="pagination">
+          <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+          <li class="page-item active">
+            <a class="page-link" href="#">1</a>
+          </li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">4</a></li>
+          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+<!-- Add fundremark modal -->
+<div bsModal #addFundRemarkModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-primary" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Fund Remark</h4>
+        <button type="button" class="close" (click)="addFundRemarkModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="form" (ngSubmit)="f.form.valid && addNewFundRemark()" #f="ngForm" novalidate>
+          <alert></alert>
+          <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !FundRemark.valid }">
+            <label class="col-md-3 col-form-label" for="hf-FundRemark">Fund Remark</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="Fund Remark" [(ngModel)]="model.FundRemark" #FundRemark="ngModel" required name="FundRemark" />
+            </div>
+            <label class="col-md-3 col-form-label" for="hf-purpose">PURPOSE</label>
+            <div class="col-md-9">
+              <select class="form-control"  [(ngModel)]="selectedRemark.id" #selectedRemark.id="ngModel" name="selectedRemark">
+              <option *ngFor="let remark of remarks" value= {{remark.id}}>
+                   {{remark.name}}
+                   </option>
+                    </select>
+            </div>
+          </div>
+          <div *ngIf="f.submitted && FundRemark.invalid " class="alert alert-danger">
+            <div *ngIf="FundRemark.errors?.required">
+              Fund Remark is required
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <button [disabled]="loading" class="btn btn-primary px-4">Save</button>
+              <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+              <!-- <a [routerLink]="['/register']" class="btn btn-link">Register</a> -->
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<!-- Edit currency modal -->
+  <div bsModal #editFundRemarkModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-primary" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Edit Fund Remark</h4>
+            <button type="button" class="close" (click)="editFundRemarkModal.hide()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form name="form" (ngSubmit)="ef.form.valid && updateFundRemark()" #ef="ngForm" novalidate>
+            <alert></alert>
+            <div class="form-group row" [ngClass]="{ 'has-error': ef.submitted && !FundRemarkEdit.valid }">
+              <label class="col-md-3 col-form-label" for="hf-FundRemarkEdit">Fund Remark</label>
+              <div class="col-md-9">
+                <input type="text" class="form-control" placeholder="Fund RemarkEdit" [(ngModel)]="model.FundRemarkEdit" #FundRemarkEdit="ngModel" required name="FundRemarkEdit" />
+              </div>
+            </div>
+            <div *ngIf="ef.submitted && FundRemarkEdit.invalid " 
+              class="alert alert-danger">
+              <div *ngIf = "FundRemarkEdit.errors?.required">
+                 Fund Remark is required
+              </div>
+            </div>
+            <div class="form-group row" [ngClass]="{ 'has-error': ef.submitted }">
+                <label class="col-md-3 col-form-label" for="hf-currency">INCOME</label>
+                <div class="col-md-9">
+              <select class="form-control"  [(ngModel)]="model.selectedRemarkEdit" #selectedRemarkEdit="ngModel" name="selectedRemarkEdit">
+              <option *ngFor="let remark of remarks" value="{{remark.id}}">
+                   {{remark.name}}
+                   </option>
+                    </select>
+            </div>
+              </div>
+            <div class="row">
+              <div class="col-6">
+                <button [disabled]="loading" class="btn btn-primary px-4">Update</button>
+                <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                <!-- <a [routerLink]="['/register']" class="btn btn-link">Register</a> -->
+              </div>
+            </div>
+            </form>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+    <div bsModal #deleteFundRemarkModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-danger" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Delete Fund  Remark??</h4>
+              <button type="button" class="close" (click)="deleteFundRemarkModal.hide()" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <alert></alert>
+              <p>Are you sure to delete User Type <b>{{model.FundRemarkToBeDeleted}}</b></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="deleteFundRemarkModal.hide()">Cancel</button>
+              <button type="button" class="btn btn-danger" (click)="deleteFundRemark()" [disabled]="!delete">Delete</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->

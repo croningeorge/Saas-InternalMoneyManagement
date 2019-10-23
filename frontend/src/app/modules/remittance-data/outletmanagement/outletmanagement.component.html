@@ -1,0 +1,175 @@
+
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header">
+        <i class="fa fa-align-justify"></i> Remittance Data / Outlet Management
+      </div>
+      <div class="card-body">
+          <button type="button" class="btn  btn-success"  data-toggle="modal" (click)="addOutletModal.show()">
+              <i class="fa fa-plus"></i> Add</button>
+          <app-search-list class="pull-right" (change)="criteriaChange($event)"></app-search-list>
+       </div>
+      <div class="card-body">
+          <div class="alert alert-info" role="alert" *ngIf="indLoading"><img src="assets/img/loading.gif" width="32" height="32" /> Loading...</div>
+        <div *ngIf='outlets && outlets.length==0' class="alert alert-info" role="alert">No record found!</div>
+        <table class="table table-bordered  table-hover"  *ngIf='outlets && outlets.length'>
+          <thead>
+            <tr>
+              <th class="info">Slno</th>
+              <th class="info">Name</th>
+              <th class="info">Location</th>
+              <th class="info">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let outlet of outlets | outletFilter:listFilter">
+              <td>{{outlet.id}}</td>
+              <td>{{outlet.name}}</td>
+              <td>{{outlet.address}}</td>
+              <td><i class="fa fa-edit fa-lg mt-4" data-toggle="modal" (click)="editOutlet(outlet); editOutletModal.show()" ></i>
+                <i class="fa fa-trash-o fa-lg mt-4" (click)="deleteOutletModalOpen(outlet); deleteOutletModal.show()"></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <nav>
+          <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <!--/.col-->
+  <!--/.col-->
+
+  <div bsModal #addOutletModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-primary" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add Outlet</h4>
+          <button type="button" class="close" (click)="addOutletModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form name="form" (ngSubmit)="f.form.valid && addNewOutlet()" #f="ngForm" novalidate>
+          <alert></alert>
+          <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
+            <label class="col-md-3 col-form-label" for="hf-name">Name</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="name" [(ngModel)]="model.name" #name="ngModel" required name="name" />
+            </div>
+          </div>
+          <div *ngIf="f.submitted && name.invalid "
+            class="alert alert-danger">
+            <div *ngIf = "name.errors?.required">
+              Name is required
+            </div>
+          </div>
+          <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !address.valid  }">
+            <label class="col-md-3 col-form-label" for="hf-name">Address</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="address" [(ngModel)]="model.address" #address="ngModel" required name="address" />
+            </div>
+          </div>
+          <div *ngIf="f.submitted && !address.valid" class="alert alert-danger">Address is required</div>
+          <div class="modal-footer">
+          <div class="row">
+            <div class="col-6">
+              <button [disabled]="loading" class="btn btn-success"><i class="fa fa-save"></i> Save</button>
+              <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+              <!-- <a [routerLink]="['/register']" class="btn btn-link">Register</a> -->
+            </div>
+          </div>
+        </div>
+          </form>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+
+  <!-- /.modal -->
+  <!-- Edit currency modal -->
+  <div bsModal #editOutletModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-primary" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Edit Outlet</h4>
+          <button type="button" class="close" (click)="editOutletModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form name="form" (ngSubmit)="ef.form.valid && updateOutlet()" #ef="ngForm" novalidate>
+          <alert></alert>
+          <div class="form-group row" [ngClass]="{ 'has-error': ef.submitted && !nameEdited.valid }">
+            <label class="col-md-3 col-form-label" for="hf-name">Name</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="name" [(ngModel)]="model.nameEdited" #nameEdited="ngModel" required name="nameEdited" />
+            </div>
+          </div>
+          <div *ngIf="ef.submitted && nameEdited.invalid "
+            class="alert alert-danger">
+            <div *ngIf = "nameEdited.errors?.required">
+              name is required
+            </div>
+          </div>
+          <div class="form-group row" [ngClass]="{ 'has-error': ef.submitted && !addressEdited.valid  }">
+            <label class="col-md-3 col-form-label" for="hf-address">Address</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="Address" [(ngModel)]="model.addressEdited" #addressEdited="ngModel" required name="addressEdited" />
+            </div>
+          </div>
+          <div *ngIf="ef.submitted && !addressEdited.valid" class="alert alert-danger">Address is required</div>
+          <div class="modal-footer">
+          <div class="row">
+            <div class="col-6">
+              <button [disabled]="loading" class="btn btn-success"><i class="fa fa-refresh"></i> Update</button>
+              <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+              <!-- <a [routerLink]="['/register']" class="btn btn-link">Register</a> -->
+            </div>
+          </div>
+        </div>
+          </form>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+  <!-- /.modal -->
+  <!-- Delete currency modal -->
+  <div bsModal #deleteOutletModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-danger" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Delete Outlet??</h4>
+          <button type="button" class="close" (click)="deleteOutletModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <alert></alert>
+          <p>Are you sure to delete outlet <b>{{model.nameToBeDeleted}}</b></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="deleteOutletModal.hide()">Cancel</button>
+          <button type="button" class="btn btn-danger" (click)="deleteOutlet()" [disabled]="!delete">Delete</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->

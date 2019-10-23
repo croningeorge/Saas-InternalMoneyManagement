@@ -1,0 +1,196 @@
+<div class="col-lg-12">
+  <div class="card">
+    <div class="card-header">
+      <i class="fa fa-align-justify"></i> Master Data / Currencies
+    </div>
+    <div class="card-body">
+      <alert></alert>
+      <button type="button" class="btn btn-success" data-toggle="modal" (click)="addCurrency(); addCurrencyModal.show()">
+          <i class="fa fa-plus"></i> Add Currency </button>
+      <app-search-box class="pull-right" (onSearch)="search($event);" (onFocus)="focus($event);"></app-search-box>
+    </div>
+    <div class="card-body">
+       <table class="table table-bordered  table-hover">
+        <thead>
+          <tr>
+            <th class="info">Slno</th>
+            <th class="info">Currency</th>
+            <th class="info">Code</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let currency of currencies; index as i;">
+            <td>{{i+1}}</td>
+            <td>{{currency.name}}</td>
+            <td>{{currency.code}}</td>
+            <td><i class="fa fa-edit fa-lg mt-4" data-toggle="modal" (click)="editCurrency(currency); editCurrencyModal.show()"></i>
+              <i class="fa fa-trash-o fa-lg mt-4" (click)="deleteCurrencyModalOpen(currency); deleteCurrencyModal.show()"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <nav>
+        <ul class="pagination">
+          <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+          <li class="page-item active">
+            <a class="page-link" href="#">1</a>
+          </li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">4</a></li>
+          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+<!-- Add currency modal -->
+<div bsModal #addCurrencyModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-primary" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Currency</h4>
+        <button type="button" class="close" (click)="addCurrencyModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <alert></alert>
+        <form name="form" (ngSubmit)="f.form.valid && addNewCurrency()" #f="ngForm" novalidate>
+          <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !id.valid }">
+            <label class="col-md-3 col-form-label" for="hf-id">Country</label>
+            <div class="col-md-9">
+              <select class="form-control" [(ngModel)]="selectedCountry.id" name="id" #id="ngModel" required>
+            <option [ngValue]="undefined" selected>Select</option>
+
+             <option *ngFor="let country of countries" value= {{country.id}}>
+                  {{country.name}}
+                  </option>
+                   </select>
+            </div>
+          </div>
+          <div *ngIf="f.submitted && id.invalid " class="alert alert-danger">
+            <div *ngIf="id.errors?.required">
+              Country is required
+            </div>
+          </div>
+          <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !currency.valid }">
+            <label class="col-md-3 col-form-label" for="hf-currency">Currency</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="currency" [(ngModel)]="model.currency" #currency="ngModel" required
+                name="currency" />
+            </div>
+          </div>
+          <div *ngIf="f.submitted && currency.invalid " class="alert alert-danger">
+            <div *ngIf="currency.errors?.required">
+              currency is required
+            </div>
+          </div>
+          <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !code.valid  }">
+            <label class="col-md-3 col-form-label" for="hf-currency">Code</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="Code" [(ngModel)]="model.code" #code="ngModel" required name="code"
+              />
+            </div>
+          </div>
+          <div *ngIf="f.submitted && !code.valid" class="alert alert-danger">Currency code is required</div>
+          <div class="row">
+            <div class="col-6">
+              <button [disabled]="loading" class="btn btn-primary px-4">Save</button>
+              <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Edit currency modal -->
+<div bsModal #editCurrencyModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-primary" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Edit Currency</h4>
+        <button type="button" class="close" (click)="editCurrencyModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <alert></alert>
+        <form name="form" (ngSubmit)="ef.form.valid && updateCurrency()" #ef="ngForm" novalidate>
+          <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !countryEdited.valid }">
+            <label class="col-md-3 col-form-label" for="hf-countryEdited">Country</label>
+            <div class="col-md-9">
+              <select class="form-control" [(ngModel)]="model.countryEdited" name="countryEdited" #countryEdited="ngModel" required>
+ <option *ngFor="let country of countries" value= {{country.id}}>
+                  {{country.name}}
+                  </option>
+                   </select>
+            </div>
+          </div>
+          <div *ngIf="f.submitted && countryEdited.invalid " class="alert alert-danger">
+            <div *ngIf="countryEdited.errors?.required">
+              Country is required
+            </div>
+          </div>
+          <div class="form-group row" [ngClass]="{ 'has-error': ef.submitted && !currencyEdited.valid }">
+            <label class="col-md-3 col-form-label" for="hf-currency">Currency</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="currency" [(ngModel)]="model.currencyEdited" #currencyEdited="ngModel"
+                required name="currencyEdited" />
+            </div>
+          </div>
+          <div *ngIf="ef.submitted && currencyEdited.invalid " class="alert alert-danger">
+            <div *ngIf="currencyEdited.errors?.required">
+              currency is required
+            </div>
+          </div>
+          <div class="form-group row" [ngClass]="{ 'has-error': ef.submitted && !codeEdited.valid  }">
+            <label class="col-md-3 col-form-label" for="hf-currency">Code</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="Code" [(ngModel)]="model.codeEdited" #codeEdited="ngModel" required
+                name="codeEdited" />
+            </div>
+          </div>
+          <div *ngIf="ef.submitted && !codeEdited.valid" class="alert alert-danger">Currency code is required</div>
+          <div class="row">
+            <div class="col-6">
+              <button [disabled]="loading" class="btn btn-primary px-4">Update</button>
+              <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Delete currency modal -->
+<div bsModal #deleteCurrencyModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Delete Currency??</h4>
+        <button type="button" class="close" (click)="deleteCurrencyModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <alert></alert>
+        <p>Are you sure to delete currency <b>{{model.currencyToBeDeleted}}</b></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="deleteCurrencyModal.hide()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="deleteCurrency()" [disabled]="!delete">Delete</button>
+      </div>
+    </div>
+  </div>
+  </div>

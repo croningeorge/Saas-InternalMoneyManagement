@@ -1,0 +1,19 @@
+<div class="form-inline">
+  <div class="form-group">
+    <div class="controls">
+      <div class="input-group">
+        <input #searchBox
+          type="text"
+          class="form-control"
+          size="30%"
+          placeholder="Search.."
+          (input)="doSearch()"
+          (keyup)="doSearch()"
+          (focus)="doFocus()"
+          (click)="doSearch()"
+          >
+        <!--  -->
+      </div>
+    </div>
+  </div>
+</div>

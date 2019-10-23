@@ -1,0 +1,165 @@
+
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header">
+        <i class="fa fa-align-justify"></i> Master Data / User Types
+      </div>
+      <div class="card-body">
+        <button type="button" class="btn btn-success" data-toggle="modal" (click)="addUserTypeClear(); addUserTypeModal.show()">
+            Add User Type
+        </button>
+        <app-search-box class="pull-right" (onSearch)="search($event);" (onFocus)="focus($event);"></app-search-box>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered  table-hover">
+          <thead>
+            <tr>
+              <th class="info">Slno</th>
+              <th class="info">User Type</th>
+              <th class="info">Status</th>
+              <!-- <th class="info">Action</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let userType of userTypes;index as i;">
+              <td>{{i+1}}</td>
+              <td>{{userType.name}}</td>
+              <td>{{statusArr[userType.status]}}</td>
+              <!-- <td><i class="fa fa-edit fa-lg mt-4" data-toggle="modal" (click)="editUserType(userType); editUserTypeModal.show()" ></i>
+                <i class="fa fa-trash-o fa-lg mt-4" (click)="deleteUserTypeModalOpen(userType); deleteUserTypeModal.show()"></i>
+              </td> -->
+            </tr>
+          </tbody>
+        </table>
+        <nav>
+          <!-- <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+          </ul> -->
+        </nav>
+      </div>
+    </div>
+  </div>
+  <!--/.col-->
+   <!-- Add currency modal -->
+   <div bsModal #addUserTypeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-primary" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Add UserType</h4>
+            <button type="button" class="close" (click)="addUserTypeModal.hide()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form name="form" (ngSubmit)="f.form.valid && addNewUserType()" #f="ngForm" novalidate>
+            <alert></alert>
+            <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !userType.valid }">
+              <label class="col-md-3 col-form-label" for="hf-userType">User Type</label>
+              <div class="col-md-9">
+                <input type="text" class="form-control" placeholder="User Types" [(ngModel)]="model.userType" #userType="ngModel" required name="userType" />
+              </div>
+            </div>
+            <div *ngIf="f.submitted && userType.invalid " 
+              class="alert alert-danger">
+              <div *ngIf = "userType.errors?.required">
+                User Type is required
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <button [disabled]="loading" class="btn btn-primary px-4">Save</button>
+                <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                <!-- <a [routerLink]="['/register']" class="btn btn-link">Register</a> -->
+              </div>
+            </div>
+            </form>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+  <!-- Edit currency modal -->
+  <div bsModal #editUserTypeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-primary" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Edit User Type</h4>
+            <button type="button" class="close" (click)="editUserTypeModal.hide()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form name="form" (ngSubmit)="ef.form.valid && updateUserType()" #ef="ngForm" novalidate>
+            <alert></alert>
+            <div class="form-group row" [ngClass]="{ 'has-error': ef.submitted && !userTypeEdit.valid }">
+              <label class="col-md-3 col-form-label" for="hf-userTypeEdit">User Type</label>
+              <div class="col-md-9">
+                <input type="text" class="form-control" placeholder="User TypeEdit" [(ngModel)]="model.userTypeEdit" #userTypeEdit="ngModel" required name="userTypeEdit" />
+              </div>
+            </div>
+            <div *ngIf="ef.submitted && userTypeEdit.invalid " 
+              class="alert alert-danger">
+              <div *ngIf = "userTypeEdit.errors?.required">
+                User Type is required
+              </div>
+            </div>
+            <div class="form-group row" [ngClass]="{ 'has-error': ef.submitted && !userTypeEditStatus.valid  }">
+                <label class="col-md-3 col-form-label" for="hf-currency">Status</label>
+                <div class="col-md-9">
+                        <label class="radio-inline" for="radio1">
+                          <input type="radio" id="radio1" name="userTypeEditStatus" value="1" [(ngModel)]="model.userTypeEditStatus" #userTypeEditStatus="ngModel" [checked]="model.radioStatus == '1'" > Active
+                        </label>
+                        <label  class="radio-inline" for="radio2">
+                          <input type="radio" id="radio2" name="userTypeEditStatus" value="0" [(ngModel)]="model.userTypeEditStatus" #userTypeEditStatus="ngModel" [checked]="model.radioStatus == '0'"> Inactive
+                        </label>
+                </div>
+              </div>
+              <div *ngIf="ef.submitted && !userTypeEditStatus.valid" class="alert alert-danger">
+                Choose User Status</div>
+            <div class="row">
+              <div class="col-6">
+                <button [disabled]="loading" class="btn btn-primary px-4">Update</button>
+                <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                <!-- <a [routerLink]="['/register']" class="btn btn-link">Register</a> -->
+              </div>
+            </div>
+            </form>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+    <div bsModal #deleteUserTypeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-danger" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Delete User Type??</h4>
+              <button type="button" class="close" (click)="deleteUserTypeModal.hide()" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <alert></alert>
+              <p>Are you sure to delete User Type <b>{{model.userTypeToBeDeleted}}</b></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="deleteUserTypeModal.hide()">Cancel</button>
+              <button type="button" class="btn btn-danger" (click)="deleteUserType()" [disabled]="!delete">Delete</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->

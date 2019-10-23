@@ -1,0 +1,54 @@
+
+  <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="fa fa-align-justify"></i> Remittance Data / Outlet Admin Management
+        </div>
+        <div class="card-body">
+            <button type="button" class="btn btn-success">
+                <i class="fa fa-plus"></i> Add</button>
+                <app-adminsearch-list class="pull-right" (change)="criteriaChange($event)"></app-adminsearch-list>
+         </div>
+        <div class="card-body">
+            <div class="alert alert-info" role="alert" *ngIf="indLoading"><img src="../../img/loading.gif" width="32" height="32" /> Loading...</div>
+            <div *ngIf='adminOutlets && adminOutlets.length==0' class="alert alert-info" role="alert">No record found!</div>
+          <table class="table table-bordered  table-hover" *ngIf='adminOutlets && adminOutlets.length' >
+            <thead>
+              <tr>
+                <th class="info">Slno</th>
+                <th class="info">Name</th>
+                <th class="info">Email</th>
+                <th class="info">AssignedOutlet</th>
+                <th class="info">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let outlet of adminOutlets | adminOutletFilter:listFilter">
+                <td>{{outlet.id}}</td>
+                <td>{{outlet.name}}</td>
+                <td>{{outlet.email}}</td>
+                <td>{{outlet.assignedOulet}}</td> -->
+                <td><i class="fa fa-edit fa-lg mt-4"></i>
+                  <i class="fa fa-trash-o fa-lg mt-4"></i>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <nav>
+            <ul class="pagination">
+              <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+              <li class="page-item active">
+                <a class="page-link" href="#">1</a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item"><a class="page-link" href="#">4</a></li>
+              <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <!--/.col-->
+
+

@@ -1,0 +1,56 @@
+﻿<div class="app flex-row align-items-center">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card-group">
+          <div class="card mx-4">
+            <div class="card-body">
+               <form name="form" (ngSubmit)="f.form.valid && login()" #f="ngForm" novalidate>
+              <h1>Login</h1>
+              <p class="text-muted">Sign In to your account</p>
+              <div *ngIf="authError" class="alert alert-danger alert-dismissable">
+                Session expired, please login again...
+                <a class="close" (click)='removeAlert(alert)'>&times;</a>
+              </div>
+              <div *ngIf="logoutSuccess" class="alert alert-danger alert-dismissable">
+                You have logged out successfully
+                <a class="close" (click)="removeAlert(alert)">&times;</a>
+              </div>
+              <alert></alert>
+              <div class="input-group mb-3"  [ngClass]="{ 'has-error': f.submitted && !email.valid }">
+                <span class="input-group-addon"><i class="icon-user"></i></span>
+                <input type="text" class="form-control" placeholder="email" [(ngModel)]="model.email" #email="ngModel" required name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"/>
+              </div>
+              <div *ngIf="f.submitted && email.invalid "
+                    class="alert alert-danger">
+                  <div *ngIf = "email.errors?.required">
+                      Email is required
+                  </div>
+                  <div *ngIf = "email.errors?.pattern && email.touched">
+                      The email id doesn't seem right
+                  </div>
+              </div>
+              <div class="input-group mb-3" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
+                <span class="input-group-addon"><i class="icon-lock"></i></span>
+                <input type="password" class="form-control" placeholder="Password" [(ngModel)]="model.password" name="password" #password="ngModel" required />
+              </div>
+              <div *ngIf="f.submitted && !password.valid" class="alert alert-danger">Password is required</div>
+              <div class="row">
+                <div class="col-6">
+                      <button [disabled]="loading" class="btn btn-success px-4">Login</button>
+                      <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                      <!-- <a [routerLink]="['/register']" class="btn btn-link">Register</a> -->
+                </div>
+                <div class="col-6 text-right">
+                  <a routerLink="/forgetpassword">Forgot Password</a>
+                  <!-- <button type="button" class="btn btn-link px-0" [routerLink]="['/forgetpassword']" >Forgot password?</button> -->
+                </div>
+              </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

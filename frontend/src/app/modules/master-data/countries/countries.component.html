@@ -1,0 +1,179 @@
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header">
+        <i class="fa fa-align-justify"></i> MasterData / Countries
+      </div>
+      <div class="card-body">
+        <alert></alert>
+        <button type="button" class="btn btn-success" data-toggle="modal" (click)="addCountry(); addCountryModal.show()">
+          <i class="fa fa-plus"></i> Add Country </button>
+        <app-search-box class="pull-right" (onSearch)="search($event);" (onFocus)="focus($event);"></app-search-box>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered  table-hover">
+          <thead>
+            <tr>
+              <th class="info">Slno</th>
+              <th class="info">Name</th>
+              <th class="info">Code</th>
+              <th class="Info">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let country of countries; index as i">
+              <td>{{i+1}}</td>
+              <td>{{country.name}}</td>
+              <td>{{country.code}}</td>
+              <td><i class="fa fa-edit fa-lg mt-4" data-toggle="modal" (click)="editCountry(country); editCountryModal.show()"></i>
+                <i class="fa fa-trash-o fa-lg mt-4" (click)="deleteCountryModalOpen(country); deleteCountryModal.show()"></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <nav>
+          <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Add country modal -->
+<div bsModal #addCountryModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-primary" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Country</h4>
+        <button type="button" class="close" (click)="addCountryModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <form name="form" (ngSubmit)="f.form.valid && addNewCountry()" #f="ngForm" novalidate>
+          <alert></alert>
+          <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !country.valid }">
+            <label class="col-md-3 col-form-label" for="hf-country">Country</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="country" [(ngModel)]="model.country" #country="ngModel" required name="country"/>
+            </div>
+          </div>
+          <div *ngIf="f.submitted && country.invalid " class="alert alert-danger">
+            <div *ngIf="country.errors?.required">
+              Country is required
+            </div>
+          </div>
+          <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !code.valid  }">
+            <label class="col-md-3 col-form-label" for="hf-country">Code</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="Code" [(ngModel)]="model.code" #code="ngModel" required name="code"
+              />
+            </div>
+          </div>
+          <div *ngIf="f.submitted && !code.valid" class="alert alert-danger">Country code is required</div>
+          <div class="form-group row">
+            <div class="col-md-3">
+              <input type="checkbox" name="allowFrom" [(ngModel)]="model.allowFrom" #allowFrom="ngModel"> Allow From</div>
+            <div class="col-md-3">
+              <input type="checkbox" name="allowTo" [(ngModel)]="model.allowTo" #allowTo="ngModel"> Allow To</div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <button [disabled]="loading" class="btn btn-primary px-4">Save</button>
+              <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+
+<!-- Edit country modal -->
+<div bsModal #editCountryModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-primary" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Edit Country</h4>
+        <button type="button" class="close" (click)="editCountryModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <form name="form" (ngSubmit)="ef.form.valid && updateCountry()" #ef="ngForm" novalidate>
+          <alert></alert>
+          <div class="form-group row" [ngClass]="{ 'has-error': ef.submitted && !countryEdited.valid }">
+            <label class="col-md-3 col-form-label" for="hf-country">Country</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="country" [(ngModel)]="model.countryEdited" #countryEdited="ngModel"
+                required name="countryEdited" />
+            </div>
+          </div>
+          <div *ngIf="ef.submitted && countryEdited.invalid " class="alert alert-danger">
+            <div *ngIf="countryEdited.errors?.required">
+              country is required
+            </div>
+          </div>
+          <div class="form-group row" [ngClass]="{ 'has-error': ef.submitted && !codeEdited.valid  }">
+            <label class="col-md-3 col-form-label" for="hf-currency">Code</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="Code" [(ngModel)]="model.codeEdited" #codeEdited="ngModel" required
+                name="codeEdited" />
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-md-3">
+              <input type="checkbox" name="allowFromEdited" [(ngModel)]="model.allowFromEdited" #allowFromEdited="ngModel">              Allow From</div>
+            <div class="col-md-3">
+              <input type="checkbox" name="allowToEdited" [(ngModel)]="model.allowToEdited" #allowToEdited="ngModel"> Allow
+              To</div>
+          </div>
+
+          <div *ngIf="ef.submitted && !codeEdited.valid" class="alert alert-danger">Country code is required</div>
+          <div class="row">
+            <div class="col-6">
+              <button [disabled]="loading" class="btn btn-primary px-4">Update</button>
+              <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Delete currency modal -->
+<div bsModal #deleteCountryModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Delete Country??</h4>
+        <button type="button" class="close" (click)="deleteCountryModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <alert></alert>
+        <p>Are you sure to delete country <b>{{model.countryToBeDeleted}}</b></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="deleteCountryModal.hide()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="deleteCountry()" [disabled]="!delete">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

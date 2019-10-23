@@ -1,0 +1,176 @@
+<div class="col-lg-12">
+    <div class="card">
+      <div class="card-header">
+        <i class="fa fa-align-justify"></i> Master Data / FAQs
+      </div>
+      <div class="card-body">
+        <button type="button" class="btn btn-success" data-toggle="modal" (click)="openModal(); addFaqModal.show()">
+          <i class="fa fa-plus"></i> Add </button>
+        <app-search-box class="pull-right" (onSearch)="search($event);" (onFocus)="focus($event);"></app-search-box>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered  table-hover">
+          <thead>
+            <tr>
+              <th class="info">Slno</th>
+              <th class="info">Question</th>
+              <th class="info">Answer</th>              
+              <th class="info">Status</th>
+              <th class="info">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let faq of faqs.faqs; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{faq.question}}</td>
+              <td><div [innerHTML]="faq.answer"></div></td>
+              <td>{{statusArr[faq.status]}}</td>
+              <td><i class="fa fa-edit fa-lg " data-toggle="modal" (click)="openModal(); editFaq(faq); editFaqModal.show()" ></i>
+                <i class="fa fa-trash-o fa-lg " (click)="deleteFaqModalOpen(faq); "></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <nav>
+          <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+</div>
+  <!--/.col-->
+<!-- ADD FAQ MODAL -->
+<div bsModal #addFaqModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-primary" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add FAQ</h4>
+          <button type="button" class="close" (click)="addFaqModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form name="form" (ngSubmit)="f.form.valid && addNewFaq(f)" #f="ngForm" novalidate>
+          <alert></alert>
+          <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && !question.valid }">
+            <label class="col-md-3 col-form-label" for="hf-currency">Question</label>
+            <div class="col-md-9">
+              <input type="text" class="form-control" placeholder="Question" [(ngModel)]="model.question" #question="ngModel" required name="question" />
+            </div>
+          </div>
+          <div *ngIf="f.submitted && question.invalid " 
+            class="alert alert-danger">
+            <div *ngIf = "question.errors?.required">
+              Question is required
+            </div>
+          </div>
+          <div class="form-group row" [ngClass]="{ 'has-error': f.submitted && answer.invalid  }">
+            <label class="col-md-3 col-form-label" for="hf-currency">Answer</label>
+            <div class="col-md-9">
+              <app-ngx-editor [placeholder]="'Answer'" [spellcheck]="true" [(ngModel)]="model.answer" [minHeight]="2" name="answer" #answer="ngModel" required></app-ngx-editor>
+            </div>
+          </div>
+          <div *ngIf="f.submitted && answer.invalid" class="alert alert-danger">Answer is required</div>
+          <div class="row">
+            <div class="col-6">
+              <button [disabled]="loading" class="btn btn-primary px-4">Save</button>
+              <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+              <!-- <a [routerLink]="['/register']" class="btn btn-link">Register</a> -->
+            </div>
+          </div>
+          </form>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- ADD FAQ MODAL END -->
+<!-- EDIT FAQ MODAL -->
+<div bsModal #editFaqModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-primary" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Edit FAQ</h4>
+            <button type="button" class="close" (click)="editFaqModal.hide()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form name="form" (ngSubmit)="ef.form.valid && updateFaq()" #ef="ngForm" novalidate>
+            <alert></alert>
+            <div class="form-group row" [ngClass]="{ 'has-error': ef.submitted && !question.valid }">
+            <label class="col-md-3 col-form-label" for="hf-currency">Question</label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" placeholder="Question" [(ngModel)]="model.editQuestion" #editQuestion="ngModel" required name="editQuestion" />
+            </div>
+            </div>
+            <div *ngIf="ef.submitted && editQuestion.invalid " 
+            class="alert alert-danger">
+            <div *ngIf = "editQuestion.errors?.required">
+                Question is required
+            </div>
+            </div>
+            <div class="form-group row" [ngClass]="{ 'has-error': ef.submitted && answer.invalid  }">
+            <label class="col-md-3 col-form-label" for="hf-currency">Answer</label>
+            <div class="col-md-9">
+              <app-ngx-editor [placeholder]="'Answer'" [spellcheck]="true" [(ngModel)]="model.editAnswer" [minHeight]="2" name="editAnswer" #editAnswer="ngModel" required></app-ngx-editor>
+            </div>
+            </div>
+            <div *ngIf="ef.submitted && editAnswer.invalid" class="alert alert-danger">Answer is required</div>
+
+            <div class="form-group row" >
+              <label class="col-md-3 col-form-label" for="hf-currency">Status</label>
+              <div class="col-md-9">
+                <input type="radio" [(ngModel)]="model.status" [value]="1" name="status">Active
+                <input type="radio" [(ngModel)]="model.status" [value]="0" name="status">Inactive
+              </div>
+              </div>
+            <div class="row">
+            <div class="col-6">
+                <button [disabled]="loading" class="btn btn-primary px-4">Update</button>
+                <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                <!-- <a [routerLink]="['/register']" class="btn btn-link">Register</a> -->
+            </div>
+            </div>
+            </form>
+        </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- EDIT FAQ MODAL END-->
+<!-- DELETE FAQ MODAL -->
+<div bsModal #deleteFaqModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Delete FAQ??</h4>
+        <button type="button" class="close" (click)="deleteFaqModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        <alert></alert>
+        <p>Are you sure to delete FAQ <b>{{model.faqToBeDeleted}}</b></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="deleteFaqModal.hide()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="deleteFaq()" [disabled]="!delete">Delete</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- DELETE FAQ MODAL -->

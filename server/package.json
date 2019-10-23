@@ -13,7 +13,7 @@
       "nodemon ./bin/www & onchange '**/*.js' -- prettier --write {{changed}}"
   },
   "dependencies": {
-    "axios": "0.17.1",
+    "axios": "0.18.1",
     "bcrypt": "1.0.3",
     "body-parser": "~1.18.2",
     "compression": "^1.7.1",

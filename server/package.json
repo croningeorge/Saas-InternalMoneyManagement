@@ -20,7 +20,7 @@
     "cookie-parser": "^1.4.3",
     "debug": "~2.6.9",
     "express": "~4.15.5",
-    "express-fileupload": "0.4.0",
+    "express-fileupload": "1.1.9",
     "express-validation": "1.0.2",
     "helmet": "3.10.0",
     "joi": "13.1.1",

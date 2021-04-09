@@ -3,5 +3,5 @@ module.exports = {
   user: "odoo_test",
   pass: "Phiph8sh",
   port: 587,
-  from: "naveen.k@eraminfotech.in"
+  from: "croningeorge@hotmail.com"
 };

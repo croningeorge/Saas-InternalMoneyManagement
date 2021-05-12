@@ -35,7 +35,7 @@
     "@ng-bootstrap/ng-bootstrap": "^1.0.0",
     "bootstrap": "4.0.0-beta.2",
     "chart.js": "2.7.1",
-    "codemirror": "^5.35.0",
+    "codemirror": "^5.58.2",
     "core-js": "2.5.1",
     "font-awesome": "^4.7.0",
     "jquery": "^1.9.1",
